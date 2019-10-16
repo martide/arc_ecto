@@ -4,19 +4,14 @@ defmodule Arc.Ecto.Definition do
 
     quote do
       defmodule Module.concat(unquote(definition), "Type") do
-        # After the 3.2 version Ecto has moved @behavior
-        # inside the `__using__` macro
-        if macro_exported?(Ecto.Type, :__using__, 1) do
-          def type, do: Arc.Ecto.Type.type(use Ecto.Type)
-        else
-          # in order to support versions lower than 3.2
-          @behaviour Ecto.Type
-        end
+        @behaviour Ecto.Type
 
         def type, do: Arc.Ecto.Type.type()
         def cast(value), do: Arc.Ecto.Type.cast(unquote(definition), value)
         def load(value), do: Arc.Ecto.Type.load(unquote(definition), value)
         def dump(value), do: Arc.Ecto.Type.dump(unquote(definition), value)
+        def embed_as(_), do: :self
+        def equal?(term1, term2), do: term1 == term2
       end
 
       def url({%{file_name: file_name, updated_at: updated_at}, scope}, version, options) do
